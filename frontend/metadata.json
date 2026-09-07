@@ -1,0 +1,8 @@
+{
+  "name": "AFACOM",
+  "description": "Plateforme culturelle, mode et histoire africaine et camerounaise pour la diaspora.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
