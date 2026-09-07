@@ -12,5 +12,8 @@ dist/
 frontend/dist/
 backend/dist/
 
+# Local Git backup
+.git-backup/
+
 # Local tooling
 .vscode/
