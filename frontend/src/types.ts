@@ -1,4 +1,4 @@
-export type TabType = 'mode' | 'articles' | 'produits';
+export type TabType = 'mode' | 'art' | 'produits' | 'dons';
 
 export interface Article {
   id: string;

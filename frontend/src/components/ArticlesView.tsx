@@ -25,7 +25,7 @@ export const ArticlesView: React.FC<ArticlesViewProps> = ({ articles, onOpenDeta
   return (
     <section className="space-y-8">
       <div className="flex flex-col gap-4 border-b border-[#E5E2DE] pb-6 sm:flex-row sm:items-end sm:justify-between">
-        <h1 className="font-serif text-3xl font-bold text-[#1A1A1A]">Histoire et Mémoire</h1>
+        <h1 className="font-serif text-3xl font-bold text-[#1A1A1A]">Art & Beauté</h1>
         <div className="flex flex-wrap gap-2">
           {categories.map((category) => (
             <button key={category} onClick={() => setSelectedCategory(category)} className={`rounded-md border px-3 py-2 text-xs font-bold uppercase tracking-wider ${selectedCategory === category ? 'border-[#1A1A1A] bg-[#1A1A1A] text-white' : 'border-[#E5E2DE] bg-white text-[#7C746C]'}`}>

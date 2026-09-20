@@ -13,6 +13,7 @@ import { HeritageQuizModal } from './components/HeritageQuizModal';
 import { BespokeModal } from './components/BespokeModal';
 import { AdminLogin } from './components/AdminLogin';
 import { ContentDetail, ContentDetailModal } from './components/ContentDetailModal';
+import { DonationModal } from './components/DonationModal';
 import { fetchArticles, fetchBannerImages, fetchFashionItems, fetchProducts } from './services/api';
 
 export default function App() {
@@ -30,6 +31,7 @@ export default function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isQuizOpen, setIsQuizOpen] = useState(false);
   const [isBespokeOpen, setIsBespokeOpen] = useState(false);
+  const [isDonationOpen, setIsDonationOpen] = useState(false);
   const [activeContentDetail, setActiveContentDetail] = useState<ContentDetail | null>(null);
   const [adminSession, setAdminSession] = useState(() => window.localStorage.getItem('afacom_admin_token'));
   const [adminEmail, setAdminEmail] = useState(() => window.localStorage.getItem('afacom_admin_email') ?? '');
@@ -63,6 +65,7 @@ export default function App() {
   const changeTab = (tab: TabType) => {
     setActiveTab(tab);
     setIsLanding(false);
+    setIsDonationOpen(tab === 'dons');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -129,11 +132,14 @@ export default function App() {
       );
     }
 
-    if (activeTab === 'articles') {
+    if (activeTab === 'art') {
       return articlesView;
     }
     if (activeTab === 'produits') {
       return productsView;
+    }
+    if (activeTab === 'dons') {
+      return <div className="min-h-[320px]" />;
     }
     return modeView;
   };
@@ -177,6 +183,7 @@ export default function App() {
               />
               <HeritageQuizModal isOpen={isQuizOpen} onClose={() => setIsQuizOpen(false)} setActiveTab={changeTab} fabrics={fashionItems} questions={[]} />
               <BespokeModal isOpen={isBespokeOpen} onClose={() => setIsBespokeOpen(false)} />
+              <DonationModal isOpen={isDonationOpen} onClose={() => { setIsDonationOpen(false); setActiveTab('mode'); }} />
             </>
           }
         />

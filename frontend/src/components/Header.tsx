@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TabType } from '../types';
-import { ShoppingBag, Search, Menu, X, BookOpen, Shirt, Sparkles } from 'lucide-react';
+import { ShoppingBag, Search, Menu, X, Palette, Shirt, Heart } from 'lucide-react';
 import { Banner } from './Banner';
 
 interface HeaderProps {
@@ -20,7 +20,6 @@ export const Header: React.FC<HeaderProps> = ({
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // 3 onglets (suppression définitive de l'onglet Agora & Entraide)
   const tabs: { id: TabType; label: string; number: string; icon: React.ReactNode; subtitle: string }[] = [
     { 
       id: 'mode', 
@@ -30,11 +29,11 @@ export const Header: React.FC<HeaderProps> = ({
       subtitle: 'Création, transmission et savoir-faire'
     },
     { 
-      id: 'articles', 
-      label: 'HISTOIRE ET MÉMOIRE',
+      id: 'art',
+      label: 'ART & BEAUTÉ',
       number: '02', 
-      icon: <BookOpen className="w-4 h-4" />, 
-      subtitle: 'Récits, patrimoine et héritages'
+      icon: <Palette className="w-4 h-4" />, 
+      subtitle: 'Créations, esthétique et expression'
     },
     { 
       id: 'produits', 
@@ -42,6 +41,13 @@ export const Header: React.FC<HeaderProps> = ({
       number: '03', 
       icon: <ShoppingBag className="w-4 h-4" />, 
       subtitle: 'Artisanat et créations solidaires'
+    },
+    {
+      id: 'dons',
+      label: 'DONS',
+      number: '04',
+      icon: <Heart className="w-4 h-4" />,
+      subtitle: 'Soutenir les actions de l’association'
     },
   ];
 
@@ -100,7 +106,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* 3 Nav Tabs */}
       <nav className="border-t border-[#E5E2DE] bg-[#FDFCFB]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="grid grid-cols-3 gap-1 sm:gap-4">
+          <div className="grid grid-cols-4 gap-1 sm:gap-4">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -160,17 +166,12 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           <div className="pt-2 border-t border-[#E5E2DE] flex flex-col gap-2">
-            <button
-              onClick={() => {
-                setActiveTab('mode');
-                setMobileMenuOpen(false);
-              }}
-              className="w-full text-left py-2.5 px-3 bg-[#F2F0ED] text-[#1A1A1A] text-xs font-bold uppercase tracking-wider flex items-center gap-2 border border-[#E5E2DE]"
-            >
-              <Sparkles className="w-4 h-4 text-[#002395]" />
-              <span>Mode & Étoffes</span>
-                <span>Mode</span>
-            </button>
+            {tabs.map((tab) => (
+              <button key={tab.id} onClick={() => { setActiveTab(tab.id); setMobileMenuOpen(false); }} className="w-full text-left py-2.5 px-3 bg-[#F2F0ED] text-[#1A1A1A] text-xs font-bold uppercase tracking-wider flex items-center gap-2 border border-[#E5E2DE]">
+                {tab.icon}
+                <span>{tab.label}</span>
+              </button>
+            ))}
           </div>
         </div>
       )}

@@ -9,7 +9,7 @@ interface AdminPanelProps {
 }
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ articles, bannerImages, onRefresh }) => {
-  const [activeAdminTab, setActiveAdminTab] = useState<'mode' | 'histoire' | 'boutique' | 'banner'>('mode');
+  const [activeAdminTab, setActiveAdminTab] = useState<'mode' | 'art' | 'boutique' | 'banner'>('mode');
   const [images, setImages] = useState<string[]>(bannerImages);
 
   // Champs du formulaire Article
@@ -89,12 +89,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ articles, bannerImages, 
           Section Mode
         </button>
         <button
-          onClick={() => setActiveAdminTab('histoire')}
+          onClick={() => setActiveAdminTab('art')}
           className={`pb-3 px-4 text-xs font-mono uppercase tracking-wider font-bold border-b-2 transition-colors whitespace-nowrap ${
-            activeAdminTab === 'histoire' ? 'border-[#002395] text-[#002395]' : 'border-transparent text-gray-500 hover:text-black'
+            activeAdminTab === 'art' ? 'border-[#002395] text-[#002395]' : 'border-transparent text-gray-500 hover:text-black'
           }`}
         >
-          Section Histoire
+          Art & Beauté
         </button>
         <button
           onClick={() => setActiveAdminTab('boutique')}
@@ -115,11 +115,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ articles, bannerImages, 
       </div>
 
       {/* Mode & Histoire : Création d'Articles avec importation depuis la galerie */}
-      {(activeAdminTab === 'mode' || activeAdminTab === 'histoire') && (
+      {(activeAdminTab === 'mode' || activeAdminTab === 'art') && (
         <div className="space-y-6">
           <div className="p-4 border border-[#E5E2DE] bg-[#FDFCFB]">
             <h3 className="font-serif font-bold text-lg text-[#1A1A1A] mb-4">
-              Ajouter un article ({activeAdminTab.toUpperCase()})
+              Ajouter un article ({activeAdminTab === 'art' ? 'ART & BEAUTÉ' : 'MODE'})
             </h3>
             <form onSubmit={handleCreateArticle} className="space-y-4">
               <div>

@@ -20,7 +20,7 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => (
             <span className="font-cinzel text-lg font-bold tracking-[0.2em] text-white">AFAC AHEAD</span>
           </div>
           <p className="mt-5 text-sm leading-7 text-[#B8B0A8]">
-            Association engagee pour la transmission des cultures, la valorisation des savoir-faire et la solidarite entre les diasporas africaines, caribeennes et leurs territoires.
+            Association engagee  pour la transmission des cultures pygmées, la valorisation des  savoirs-faire et la solidarité. LE MONDE, LA DIASPORA, LES CARAIBES. 
           </p>
         </div>
 
@@ -28,8 +28,9 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => (
           <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-white">Decouvrir</h2>
           <nav className="mt-4 flex flex-col items-start gap-3 text-sm text-[#B8B0A8]">
             <button onClick={() => setActiveTab('mode')} className="transition-colors hover:text-white">Mode</button>
-            <button onClick={() => setActiveTab('articles')} className="transition-colors hover:text-white">Histoire et Memoire</button>
+            <button onClick={() => setActiveTab('art')} className="transition-colors hover:text-white">Art et Beaute</button>
             <button onClick={() => setActiveTab('produits')} className="transition-colors hover:text-white">Boutique</button>
+            <button onClick={() => setActiveTab('dons')} className="transition-colors hover:text-white">Dons</button>
           </nav>
         </div>
 
