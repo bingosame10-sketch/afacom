@@ -137,7 +137,7 @@ export const DonationModal: React.FC<DonationModalProps> = ({ isOpen, onClose })
 
                 {/* Amounts */}
                 <div className="grid grid-cols-4 gap-2">
-                  {[30, 50, 100, 250].map((amt) => (
+                  {[5, 10, 15, 20].map((amt) => (
                     <button
                       key={amt}
                       type="button"
