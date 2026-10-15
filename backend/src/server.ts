@@ -11,9 +11,30 @@ import { requireAdmin } from './middleware/requireAdmin.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
-const allowedOrigin = process.env.FRONTEND_URL ?? 'http://localhost:3000';
 
-app.use(cors({ origin: allowedOrigin }));
+// Définition des origines autorisées
+const allowedOrigins = [
+  'https://afac-ahead.com',
+  'https://www.afac-ahead.com',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL
+].filter(Boolean) as string[];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Autorise les requêtes sans origine (comme Postman) ou si l'origine est dans la liste
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Bloqué par la politique CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 app.use(express.json());
 
 app.get('/api/health', (_request, response) => {
@@ -27,7 +48,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/fashion', fashionRoutes);
 app.use('/api/forum', forumRoutes);
 
-// Ajouter ces endpoints
+// Endpoints d'administration
 app.get('/api/settings/banner', getBannerImages);
 app.put('/api/settings/banner', requireAdmin, updateBannerImages);
 
@@ -36,5 +57,5 @@ app.use((_request, response) => {
 });
 
 app.listen(port, () => {
-  console.log(`AFACOM backend listening on http://localhost:${port}`);
+  console.log(`AFACOM backend listening on port ${port}`);
 });
