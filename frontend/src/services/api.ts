@@ -3,7 +3,12 @@ import { Article, FashionFabric, Product } from '../types';
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000/api';
 
 const adminHeaders = (): Record<string, string> => {
-  const token = window.localStorage.getItem('afacom_admin_token');
+  const token =
+    window.localStorage.getItem('afacom_admin_token') ||
+    window.localStorage.getItem('accessToken') ||
+    window.localStorage.getItem('token') ||
+    window.localStorage.getItem('access_token');
+
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
@@ -15,6 +20,12 @@ export const loginAdmin = async (email: string, password: string) => {
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.error ?? 'Connexion impossible');
+  
+  // Stockage automatique du token dans le localStorage
+  if (result.accessToken) {
+    window.localStorage.setItem('afacom_admin_token', result.accessToken);
+  }
+  
   return result as { accessToken: string; email: string };
 };
 
@@ -92,10 +103,11 @@ export const updateArticle = async (id: string, articleData: any) => {
 export const deleteArticle = async (id: string) => {
   const response = await fetch(`${API_URL}/articles/${id}`, {
     method: 'DELETE',
-    headers: adminHeaders(),
+    headers: { 'Content-Type': 'application/json', ...adminHeaders() },
   });
   if (!response.ok) {
-    throw new Error('Erreur lors de la suppression de l\'article');
+    const errorResult = await response.json().catch(() => ({}));
+    throw new Error(errorResult.error ?? 'Erreur lors de la suppression de l\'article');
   }
   return response.json();
 };
