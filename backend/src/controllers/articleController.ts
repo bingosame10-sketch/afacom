@@ -8,17 +8,23 @@ export async function listArticles(_request: Request, response: Response) {
     return;
   }
 
-  const { data, error } = await supabase
-    .from('articles')
-    .select('*')
-    .order('created_at', { ascending: false });
+  try {
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-  if (error) {
-    response.status(500).json({ error: error.message });
-    return;
+    if (error) {
+      console.error('Erreur Supabase lors du listing des articles :', error);
+      response.status(500).json({ error: error.message });
+      return;
+    }
+
+    response.json(data ?? []);
+  } catch (err: any) {
+    console.error('Erreur serveur lors du listing des articles :', err);
+    response.status(500).json({ error: err.message || 'Server error' });
   }
-
-  response.json(data ?? []);
 }
 
 // Créer un nouvel article
@@ -28,17 +34,35 @@ export async function createArticle(request: Request, response: Response) {
     return;
   }
 
-  const { data, error } = await supabase
-    .from('articles')
-    .insert([request.body])
-    .select();
+  try {
+    // Extraction explicite des champs pour éviter d'envoyer des propriétés inconnues du formulaire
+    const { title, content, category, image_url, summary, author } = request.body;
 
-  if (error) {
-    response.status(500).json({ error: error.message });
-    return;
+    const { data, error } = await supabase
+      .from('articles')
+      .insert([
+        {
+          title,
+          content,
+          category,
+          image_url,
+          summary,
+          ...(author && { author }),
+        },
+      ])
+      .select();
+
+    if (error) {
+      console.error('Erreur Supabase à la création de l\'article :', error);
+      response.status(500).json({ error: error.message });
+      return;
+    }
+
+    response.status(201).json(data ? data[0] : null);
+  } catch (err: any) {
+    console.error('Erreur serveur lors de la création de l\'article :', err);
+    response.status(500).json({ error: err.message || 'Server error' });
   }
-
-  response.status(201).json(data ? data[0] : null);
 }
 
 // Mettre à jour un article
@@ -48,19 +72,34 @@ export async function updateArticle(request: Request, response: Response) {
     return;
   }
 
-  const { id } = request.params;
-  const { data, error } = await supabase
-    .from('articles')
-    .update(request.body)
-    .eq('id', id)
-    .select();
+  try {
+    const { id } = request.params;
+    const { title, content, category, image_url, summary, author } = request.body;
 
-  if (error) {
-    response.status(500).json({ error: error.message });
-    return;
+    const { data, error } = await supabase
+      .from('articles')
+      .update({
+        title,
+        content,
+        category,
+        image_url,
+        summary,
+        ...(author && { author }),
+      })
+      .eq('id', id)
+      .select();
+
+    if (error) {
+      console.error('Erreur Supabase à la mise à jour de l\'article :', error);
+      response.status(500).json({ error: error.message });
+      return;
+    }
+
+    response.json(data ? data[0] : null);
+  } catch (err: any) {
+    console.error('Erreur serveur lors de la mise à jour de l\'article :', err);
+    response.status(500).json({ error: err.message || 'Server error' });
   }
-
-  response.json(data ? data[0] : null);
 }
 
 // Supprimer un article
@@ -70,16 +109,23 @@ export async function deleteArticle(request: Request, response: Response) {
     return;
   }
 
-  const { id } = request.params;
-  const { error } = await supabase
-    .from('articles')
-    .delete()
-    .eq('id', id);
+  try {
+    const { id } = request.params;
 
-  if (error) {
-    response.status(500).json({ error: error.message });
-    return;
+    const { error } = await supabase
+      .from('articles')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Erreur Supabase à la suppression de l\'article :', error);
+      response.status(500).json({ error: error.message });
+      return;
+    }
+
+    response.json({ message: 'Article supprimé avec succès' });
+  } catch (err: any) {
+    console.error('Erreur serveur lors de la suppression de l\'article :', err);
+    response.status(500).json({ error: err.message || 'Server error' });
   }
-
-  response.json({ message: 'Article supprimé avec succès' });
 }
