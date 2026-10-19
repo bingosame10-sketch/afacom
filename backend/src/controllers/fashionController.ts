@@ -9,7 +9,7 @@ export async function listFashionItems(_request: Request, response: Response) {
 
   try {
     const { data, error } = await supabase
-      .from('fashion_items')
+      .from('fashion_fabrics') // Corrigé ici
       .select('*')
       .order('created_at', { ascending: false });
 
@@ -36,7 +36,7 @@ export async function createFashionItem(request: Request, response: Response) {
     const { title, description, image_url, category, designer } = request.body;
 
     const { data, error } = await supabase
-      .from('fashion_items')
+      .from('fashion_fabrics') // Corrigé ici
       .insert([
         {
           title,
@@ -72,7 +72,7 @@ export async function updateFashionItem(request: Request, response: Response) {
     const { title, description, image_url, category, designer } = request.body;
 
     const { data, error } = await supabase
-      .from('fashion_items')
+      .from('fashion_fabrics') // Corrigé ici
       .update({
         title,
         description,
@@ -106,7 +106,7 @@ export async function deleteFashionItem(request: Request, response: Response) {
     const { id } = request.params;
 
     const { error } = await supabase
-      .from('fashion_items')
+      .from('fashion_fabrics') // Corrigé ici
       .delete()
       .eq('id', id);
 
