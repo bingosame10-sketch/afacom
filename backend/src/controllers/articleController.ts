@@ -35,21 +35,36 @@ export async function createArticle(request: Request, response: Response) {
   }
 
   try {
-    // Extraction explicite des champs pour éviter d'envoyer des propriétés inconnues du formulaire
-    const { title, content, category, image_url, summary, author } = request.body;
+    const body = request.body;
+
+    // Récupération flexible de chaque champ pour correspondre à ton front-end et ta base de données
+    const title = body.title;
+    const content = body.content ?? [body.lead_paragraph || body.summary || ''];
+    const category = body.category || 'Histoire Royale';
+    const cover_image = body.cover_image || body.coverImage || body.image_url || '';
+    const lead_paragraph = body.lead_paragraph || body.summary || body.subtitle || '';
+    const author = body.author || { name: 'Admin', role: 'Éditeur', avatar: '' };
+
+    const payload: any = {
+      title,
+      content,
+      category,
+      author,
+    };
+
+    // Ajout conditionnel des champs d'image et de résumé selon les colonnes de ta table
+    if (cover_image) {
+      payload.cover_image = cover_image;
+      payload.coverImage = cover_image; // Sécurité pour couvrir les deux noms de colonnes possibles
+    }
+    if (lead_paragraph) {
+      payload.lead_paragraph = lead_paragraph;
+      payload.summary = lead_paragraph;
+    }
 
     const { data, error } = await supabase
       .from('articles')
-      .insert([
-        {
-          title,
-          content,
-          category,
-          image_url,
-          summary,
-          ...(author && { author }),
-        },
-      ])
+      .insert([payload])
       .select();
 
     if (error) {
@@ -74,18 +89,32 @@ export async function updateArticle(request: Request, response: Response) {
 
   try {
     const { id } = request.params;
-    const { title, content, category, image_url, summary, author } = request.body;
+    const body = request.body;
+
+    const title = body.title;
+    const content = body.content;
+    const category = body.category;
+    const cover_image = body.cover_image || body.coverImage || body.image_url;
+    const lead_paragraph = body.lead_paragraph || body.summary || body.subtitle;
+    const author = body.author;
+
+    const payload: any = {};
+    if (title !== undefined) payload.title = title;
+    if (content !== undefined) payload.content = content;
+    if (category !== undefined) payload.category = category;
+    if (cover_image !== undefined) {
+      payload.cover_image = cover_image;
+      payload.coverImage = cover_image;
+    }
+    if (lead_paragraph !== undefined) {
+      payload.lead_paragraph = lead_paragraph;
+      payload.summary = lead_paragraph;
+    }
+    if (author !== undefined) payload.author = author;
 
     const { data, error } = await supabase
       .from('articles')
-      .update({
-        title,
-        content,
-        category,
-        image_url,
-        summary,
-        ...(author && { author }),
-      })
+      .update(payload)
       .eq('id', id)
       .select();
 
