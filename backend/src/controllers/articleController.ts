@@ -37,12 +37,11 @@ export async function createArticle(request: Request, response: Response) {
   try {
     const body = request.body;
 
-    // Récupération flexible de chaque champ pour correspondre à ton front-end et ta base de données
     const title = body.title;
-    const content = body.content ?? [body.lead_paragraph || body.summary || ''];
+    const content = body.content ?? [body.lead_paragraph || body.subtitle || ''];
     const category = body.category || 'Histoire Royale';
     const cover_image = body.cover_image || body.coverImage || body.image_url || '';
-    const lead_paragraph = body.lead_paragraph || body.summary || body.subtitle || '';
+    const lead_paragraph = body.lead_paragraph || body.subtitle || '';
     const author = body.author || { name: 'Admin', role: 'Éditeur', avatar: '' };
 
     const payload: any = {
@@ -52,14 +51,12 @@ export async function createArticle(request: Request, response: Response) {
       author,
     };
 
-    // Ajout conditionnel des champs d'image et de résumé selon les colonnes de ta table
     if (cover_image) {
       payload.cover_image = cover_image;
-      payload.coverImage = cover_image; // Sécurité pour couvrir les deux noms de colonnes possibles
+      payload.coverImage = cover_image;
     }
     if (lead_paragraph) {
       payload.lead_paragraph = lead_paragraph;
-      payload.summary = lead_paragraph;
     }
 
     const { data, error } = await supabase
@@ -95,7 +92,7 @@ export async function updateArticle(request: Request, response: Response) {
     const content = body.content;
     const category = body.category;
     const cover_image = body.cover_image || body.coverImage || body.image_url;
-    const lead_paragraph = body.lead_paragraph || body.summary || body.subtitle;
+    const lead_paragraph = body.lead_paragraph || body.subtitle;
     const author = body.author;
 
     const payload: any = {};
@@ -108,7 +105,6 @@ export async function updateArticle(request: Request, response: Response) {
     }
     if (lead_paragraph !== undefined) {
       payload.lead_paragraph = lead_paragraph;
-      payload.summary = lead_paragraph;
     }
     if (author !== undefined) payload.author = author;
 
