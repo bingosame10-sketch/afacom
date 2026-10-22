@@ -1,16 +1,29 @@
 import { Article, FashionFabric, Product } from '../types';
 
-// Fallback direct vers Render si VITE_API_URL n'est pas configuré dans l'environnement de build
+// Fallback direct vers Render si VITE_API_URL n'est pas configuré dans l'environnement de build (ex: Vercel)
 const API_URL = import.meta.env.VITE_API_URL || 'https://afacom.onrender.com/api';
 
 const adminHeaders = (): Record<string, string> => {
-  const token =
-    window.localStorage.getItem('afacom_admin_token') ||
-    window.localStorage.getItem('accessToken') ||
-    window.localStorage.getItem('token') ||
-    window.localStorage.getItem('access_token');
+  const token = window.localStorage.getItem('afacom_admin_token');
+
+  console.log("Jeton d'authentification :", token ? "Présent ✅" : "ABSENT ❌");
+
+  if (!token) {
+    console.error("ATTENTION : Aucun token admin trouvé dans le localStorage ! Réauthentification nécessaire.");
+  }
 
   return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+const adminFetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+  const response = await fetch(input, init);
+  if (response.status === 401) {
+    console.warn("Session expirée ou invalide (401). Nettoyage du localStorage.");
+    window.localStorage.removeItem('afacom_admin_token');
+    window.localStorage.removeItem('afacom_admin_email');
+    window.dispatchEvent(new Event('afacom-admin-session-expired'));
+  }
+  return response;
 };
 
 export const loginAdmin = async (email: string, password: string) => {
@@ -25,6 +38,9 @@ export const loginAdmin = async (email: string, password: string) => {
   // Enregistrement automatique du jeton sous la clé 'afacom_admin_token'
   if (result.accessToken) {
     window.localStorage.setItem('afacom_admin_token', result.accessToken);
+    if (result.email) {
+      window.localStorage.setItem('afacom_admin_email', result.email);
+    }
   }
 
   return result as { accessToken: string; email: string };
@@ -40,7 +56,7 @@ export const fetchBannerImages = async () => {
 };
 
 export const updateBannerImages = async (bannerImages: string[]) => {
-  const response = await fetch(`${API_URL}/settings/banner`, {
+  const response = await adminFetch(`${API_URL}/settings/banner`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...adminHeaders() },
     body: JSON.stringify({ bannerImages }),
@@ -78,11 +94,14 @@ export const fetchArticles = async (): Promise<Article[]> => {
 };
 
 export const createArticle = async (articleData: any) => {
-  const response = await fetch(`${API_URL}/articles`, {
+  const headers = { 'Content-Type': 'application/json', ...adminHeaders() };
+
+  const response = await adminFetch(`${API_URL}/articles`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...adminHeaders() },
+    headers,
     body: JSON.stringify(articleData),
   });
+
   if (!response.ok) {
     const errorResult = await response.json().catch(() => ({}));
     throw new Error(errorResult.error ?? 'Erreur lors de la création de l\'article');
@@ -91,7 +110,7 @@ export const createArticle = async (articleData: any) => {
 };
 
 export const updateArticle = async (id: string, articleData: any) => {
-  const response = await fetch(`${API_URL}/articles/${id}`, {
+  const response = await adminFetch(`${API_URL}/articles/${id}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...adminHeaders() },
     body: JSON.stringify(articleData),
@@ -103,7 +122,7 @@ export const updateArticle = async (id: string, articleData: any) => {
 };
 
 export const deleteArticle = async (id: string) => {
-  const response = await fetch(`${API_URL}/articles/${id}`, {
+  const response = await adminFetch(`${API_URL}/articles/${id}`, {
     method: 'DELETE',
     headers: { 'Content-Type': 'application/json', ...adminHeaders() },
   });

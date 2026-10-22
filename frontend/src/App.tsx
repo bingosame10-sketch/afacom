@@ -62,6 +62,16 @@ export default function App() {
     loadData();
   }, []);
 
+  useEffect(() => {
+    const handleAdminSessionExpired = () => {
+      setAdminSession(null);
+      setAdminEmail('');
+    };
+
+    window.addEventListener('afacom-admin-session-expired', handleAdminSessionExpired);
+    return () => window.removeEventListener('afacom-admin-session-expired', handleAdminSessionExpired);
+  }, []);
+
   const changeTab = (tab: TabType) => {
     setActiveTab(tab);
     setIsLanding(false);

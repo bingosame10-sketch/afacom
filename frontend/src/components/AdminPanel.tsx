@@ -61,7 +61,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ articles, bannerImages, 
       alert('Article créé avec succès !');
       onRefresh();
     } catch (error) {
-      alert('Erreur lors de la création de l\'article');
+      alert(
+        error instanceof Error
+          ? `Création impossible : ${error.message}`
+          : 'Création impossible : erreur inconnue'
+      );
     }
   };
 
